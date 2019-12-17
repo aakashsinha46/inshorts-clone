@@ -12,18 +12,19 @@ def get_mothership_politics_news(soup=None):
       imgpath = (soup.find("figure", attrs={"class" : "featured-image"})).find("img")['src'] #image path
 
       heading = (soup.find("div", attrs={"id": "article-original"})).find("h1").text #heading
-
-      para = soup.find("div", attrs={"class": "content-article-wrap"})
-      for f in para.find_all("p")
-         summary = " ".join(f.text)
-
+     
+      summary = " ".join(p.text for p in soup.select('div.content-article-wrap > p')) #summary
+   
       item.update({
       'image': imgpath,
-      'heading': heading
+      'heading': heading,
+      'desc' : summary
       })
   
    pprint.pprint(news)
 
 if __name__ == "__main__":
-   html = get_soup_html("https://mothership.sg/category/parliament/")
-   get_mothership_politics_news(html)
+   categorys_on_mothership = ['parliament/', 'tech/', 'lifestyle/', 'lifestyle/celebrity/']
+   for category in categorys_on_mothership:
+      html = get_soup_html("https://mothership.sg/category/{link}".format(link=category))
+      get_mothership_politics_news(html)

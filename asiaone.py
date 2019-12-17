@@ -38,6 +38,10 @@ def get_showbiz_news(soup=None):
 
 
 if __name__ == "__main__":
-    html = get_soup_html("https://www.asiaone.com/showbiz")
-    get_showbiz_news(html)
+   categorys_on_asiaone = ['showbiz', 'digital', 'lifestyle', 'health']
+   for category in categorys_on_asiaone:
+      html = get_soup_html("https://www.asiaone.com/{link}".format(link=category))
+      get_showbiz_news(html)
+      
 
+   
