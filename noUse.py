@@ -1,7 +1,9 @@
-import requests
-from bs4 import BeautifulSoup as bs
+from showbiz import news
+from get_soup import get_soup_html
+n = news
+print(n)
 
-url = "https://www.asiaone.com/entertainment/tamara-ecclestone-has-had-75-million-worth-jewellery-stolen"
+'''
 r = requests.get(url)
 soup = bs(r.content, 'html.parser')
 
@@ -14,5 +16,6 @@ r = q.find("img", attrs={"class": "img-responsive"})
 imgPath = r['src'] #image path
 
 g = soup.find("div", attrs={"class": "field field-name-body field--type-text-with-summary field--label-hidden field-item"})
-print(g)
-
+for item in g.find_all("p"):
+	print(item.text)  # description
+'''
