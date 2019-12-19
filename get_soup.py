@@ -7,9 +7,3 @@ def get_soup_html(url=None):
                 soup = bs(url_response.content, 'html.parser')
                 return soup
 
-
-#if __name__ == "__main__":
-        #soup = get_soup_html("https://www.asiaone.com/lifestyle")
-        # get_news(soup)
-        # print(soup.prettify())
-

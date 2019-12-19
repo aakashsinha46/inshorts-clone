@@ -1,4 +1,5 @@
-from get_soup import get_soup_html
+from proxy_get_soup import get_soup_html, get_proxy
+#from get_soup import get_soup_html
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
@@ -47,14 +48,15 @@ def main():
       prepared_links[category] = []
       with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
          pool_links = [executor.submit(get_news_data, link) for link in links]
-         sleep(10)
+         sleep(5)
          #print("sleeping")
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('mothership_output.json', 'w') as f:          #the output at mothership_output.json
+   with open('proxy_mothership_output.json', 'w') as f:          #the output at mothership_output.json
       f.write(json.dumps(prepared_links))     
    
 
 if __name__ == "__main__":
+   get_proxy()
    main()

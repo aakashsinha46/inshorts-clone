@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="57628f90-4d45-4a1a-8de0-db42e48e80bd" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/noUse.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/showbiz.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/get_soup.py" beforeDir="false" afterPath="$PROJECT_DIR$/get_soup.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,9 +17,10 @@
   <component name="ProjectId" id="1V3iy71olba7Us3YHmVr5x7FUZU" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Projects/college/vOCt/withSaa" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -34,8 +34,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.showbiz">
-    <configuration name="first" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.asiaone-thread">
+    <configuration name="asiaone-thread" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="bs4" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -47,7 +47,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/first.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/asiaone-thread.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -77,7 +77,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="sec" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="proxy_sample" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="bs4" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -89,7 +89,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sec.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/proxy_sample.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="proxy_sample_2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="bs4" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/proxy_asiaone.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -121,10 +142,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.asiaone-thread" />
+        <item itemvalue="Python.proxy_sample" />
+        <item itemvalue="Python.proxy_sample_2" />
         <item itemvalue="Python.showbiz" />
         <item itemvalue="Python.get_soup" />
-        <item itemvalue="Python.sec" />
-        <item itemvalue="Python.first" />
       </list>
     </recent_temporary>
   </component>
