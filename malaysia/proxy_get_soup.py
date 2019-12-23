@@ -28,7 +28,6 @@ def get_proxy():
        'port': row.find_all('td')[1].string
       })
    #Choose a random proxy
-   print(proxies.__len__())
 def random_proxy():
     proxy_index = random.randint(0, len(proxies) - 1)
     return proxy_index
