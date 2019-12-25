@@ -1,27 +1,38 @@
-from get_soup import get_soup_html
+import sys
+sys.path.insert(0,'../')
+from proxy_get_soup import get_soup_html,get_proxy
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
 
-CATEGORY = ['parliament/', 'tech/', 'lifestyle/', 'lifestyle/celebrity/']
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
+CATEGORY = ['']
+link=[]
 
 # categorise links
-def get_mothership_news_links(soup, category):
-   links = [item.find('a')['href'] for item in soup.find_all("div", attrs={"class": "ind-article"})[1:]]
-   news_links[category]=links
-
+def get_femalemag_news_links(soup, category):
+   for item in soup.find_all("h2", attrs={"class":"title entry-title"}):
+      if item.find('a') is not None:
+         link.append(item.find('a')['href'])
+   news_links[category] = link
+ 
 def get_news_data(link):
    soup = get_soup_html(link)
-   imgpath = (soup.find("figure", attrs={
-               "class": "featured-image"})).find("img")['src']  # image path
-   # heading
-   heading = (
-         soup.find("div", attrs={"id": "article-original"})).find("h1").text
-   summary = " ".join(p.text for p in soup.select('div.content-article-wrap > p'))
+   try:
+      heading = soup.find("h1").text
+   except:
+      heading = None
+   try: 
+      imgpath = soup.find('div', attrs={'class':'theiaPostSlider_preloadedSlide'}).find('div').find('img')['data-lazy-src']
+   except :
+      imgpath = None
+   try:
+      summary = " ".join([p.text for p in soup.find('div', attrs={'class':'theiaPostSlider_preloadedSlide'}).find_all('p')])
+   except:
+      summary = None
    return {
           'image': imgpath,
           'heading': heading,
@@ -30,14 +41,14 @@ def get_news_data(link):
    }
 
 def get_soup(category:None):
-   return get_soup_html("https://mothership.sg/category/{link}".format(link=category))
+   return get_soup_html("https://femalemag.com.my/{link}".format(link=category))
 
 @time_taken
 def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_mothership_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_femalemag_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -52,9 +63,10 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('mothership_output.json', 'w') as f:          #the output at mothership_output.json
+   with open('femalemag.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
    
 
 if __name__ == "__main__":
+   get_proxy()
    main()

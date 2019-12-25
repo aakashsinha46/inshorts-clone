@@ -9,28 +9,27 @@ from decorators import time_taken
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['economy/', 'lifestyle/']
+CATEGORY = ['category/leisure/health/','home-sports/', 'category/business/local-business/']
 
 # categorise links
-def get_independent_news_links(soup, category):
-   links = [item.find('a')['href'] for item in soup.find_all("h3", attrs={"class": "entry-title td-module-title"})]
+def get_freemalaysiatoday_news_links(soup, category):
+   links = [item.find('a')['href'] for item in soup.find_all("div", attrs={"class": "td-module-thumb"})]
    news_links[category]=links
-   
+   #print(news_links)
+ 
 def get_news_data(link):
    soup = get_soup_html(link)
    try:
-      if soup.find('figure') is not None:
-         imgpath = ((soup.find('figure')).find('a')['href'])
-      else:
-         imgpath = None
-   except:
-      imgpath = None
-   try:
-      heading = (soup.find("h1", attrs={"class":"tdb-title-text"})).text
+      heading = (soup.find("h1", attrs={"class":"entry-title"})).text
    except:
       heading = None
+   try: 
+      imgpath = soup.find('figure').find('img')['src']
+   except :
+      imgpath = None
    try:
-      summary =  " ".join(p.text for items in soup.find_all("div", attrs={"class" : "tdb-block-inner td-fix-index"}) for p in items.find_all("p"))
+      g = soup.find('div',attrs={'class':'td-post-content tagdiv-type'})
+      summary = " ".join(p.text for p in g.find_all('p'))
    except:
       summary = None
    return {
@@ -39,16 +38,16 @@ def get_news_data(link):
           'desc': summary,
           'link':link
    }
-   
+
 def get_soup(category:None):
-   return get_soup_html("http://theindependent.sg/news/{link}".format(link=category))
+   return get_soup_html("https://www.freemalaysiatoday.com/{link}".format(link=category))
 
 @time_taken
 def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_independent_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_freemalaysiatoday_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -63,7 +62,7 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('the_independent_output.json', 'w') as f:          #the output at independent_output.json
+   with open('freemalaysiatoday.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
    
 

@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0,'../')
 from proxy_get_soup import get_soup_html,get_proxy
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
@@ -16,19 +18,21 @@ def get_tnp_news_links(soup, category):
    
 def get_news_data(link):
    soup = get_soup_html(link)
-   #print((soup.find('figure')).find('a')['href'])
-   #imgpath = (soup.select('figure >a'))['href']
-   if soup.find('figure',attrs={'class':'group-media-frame field-group-html-element'})is not None:
-      imgpath = (soup.find('figure',attrs={'class':'group-media-frame field-group-html-element'})).find('img')['src']
-   else:
+   try: 
+      if soup.find('figure',attrs={'class':'group-media-frame field-group-html-element'})is not None:
+         imgpath = (soup.find('figure',attrs={'class':'group-media-frame field-group-html-element'})).find('img')['src']
+      else:
+         imgpath = None
+   except:
       imgpath = None
-
-   #imgpath = soup.select('figure > a')['href']  # image path
-   # heading
-   heading = (soup.find("h1", attrs={'class':'story-headline'})).text
-   
-   summary =  " ".join(p.text for p in soup.select('div.body-copy > p'))
-
+   try:
+      heading = (soup.find("h1", attrs={'class':'story-headline'})).text
+   except:
+      heading = None
+   try:
+      summary =  " ".join(p.text for p in soup.select('div.body-copy > p'))
+   except:
+      summary = None
    return {
           'image': imgpath,
           'heading': heading,

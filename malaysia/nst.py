@@ -7,52 +7,49 @@ from time import sleep
 from decorators import time_taken
 import pprint
 
-CATEGORY = ['showbiz', 'sports', 'tech-gadgets', 'money', 'life']
+CATEGORY = ['politics', 'business', 'sports', 'lifestyle', 'taxonomy/term/4991']  #taxonomy/term/4991 is fashion
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
+link =[]
 
-def get_malaymail_news_link(soup, category):
-   links = [item2.find('a')['href'] for item in soup.find_all("div", attrs={"class":"content"}) for item2 in item.find_all("li")]
-   for index, item in enumerate(links):
-      if item.find("https://www.malaymail.com"):
-         print("Not found ", item) # find and replace with concatnation
-         link = "https://www.malaymail.com{item}".format(item=item)
-         links[index] = link
-   news_links[category] = links
-   
+def get_nst_news_link(soup, category):
+   for item in soup.find_all("span", attrs={"class":"field-content"}):
+      if item.find('a') is not None:
+         link.append("https://www.nst.com.my/{link}".format(link=item.find('a')['href']))
+   news_links[category] = link
+
 def get_news_data(link):
    soup = get_soup_html(link)
-
+   
    try:
-      heading = soup.find("h1").text 
+      heading = soup.find('div',attrs={"class":'ph-wrapper'}).text #heading
    except:
       heading = None
    try:
-      imgPath = soup.find("figure").find('img')['src'] # image path
+      imgPath =  (soup.find("div",attrs={"class":"field-content"})).find('img')['src'] # image path
    except:
       imgPath = None
    try:
-      summary = " ".join([p.text for p in soup.find("div",attrs={"class":"col-12 col-md-7 col-lg-8 primary"}).select('article >p')]) 
+      summary = " ".join([p.text for p in soup.find("div",attrs={"class":"field-item even"}).select('p')])
    except:
       summary = None
-   
    return {
       'image' : imgPath,
       'heading' : heading,
       'desc' : summary,
-      'link' : link      
+      'link' : link
    }
 
-def get_soup(category :None):
-   return get_soup_html("https://www.malaymail.com/news/{link}".format(link=category))
+def get_soup(category:None):
+   return get_soup_html("https://www.nst.com.my/news/{link}".format(link=category))
 
 @time_taken
 def main():
    #threading
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       #submit to pool object 
-      pool = [ executor.submit(get_malaymail_news_link, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_nst_news_link, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
       #on complete
       for task in as_completed(pool):
          task.result()
@@ -65,13 +62,11 @@ def main():
          #print("sleeping")
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
-   
-   with open( 'malaymail.json', 'w') as f:           #the output at asiaone_output.json
+
+   with open('nst.json', 'w') as f:           #the output at asiaone_output.json
       f.write(json.dumps(prepared_links))
 
 if __name__ == "__main__":
     get_proxy()
     main()
-      
 
-   

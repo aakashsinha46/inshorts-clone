@@ -1,5 +1,6 @@
+import sys
+sys.path.insert(0,'../')
 from proxy_get_soup import get_soup_html, get_proxy
-#from get_soup import get_soup_html
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
@@ -17,12 +18,18 @@ def get_mothership_news_links(soup, category):
 
 def get_news_data(link):
    soup = get_soup_html(link)
-   imgpath = (soup.find("figure", attrs={
-               "class": "featured-image"})).find("img")['src']  # image path
-   # heading
-   heading = (
-         soup.find("div", attrs={"id": "article-original"})).find("h1").text
-   summary = " ".join(p.text for p in soup.select('div.content-article-wrap > p'))
+   try:
+      imgpath = (soup.find("figure", attrs={"class": "featured-image"})).find("img")['src']
+   except:
+      imgpath = None
+   try:
+      heading = (soup.find("div", attrs={"id": "article-original"})).find("h1").text
+   except:
+      heading = None
+   try:
+      summary = " ".join(p.text for p in soup.select('div.content-article-wrap > p'))
+   except:
+      summary = None
    return {
           'image': imgpath,
           'heading': heading,

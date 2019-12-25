@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0,'../')
 from proxy_get_soup import get_soup_html, get_proxy
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
@@ -19,15 +21,23 @@ def get_asiaone_news_link(soup, category):
 
 def get_news_data(link):
    soup = get_soup_html(link)
-   heading = soup.find("h1", attrs={"class": "ui header page__title"}).text #heading
-   
-   p = soup.find("div", attrs={"class": "field field-name-field-image"})
-   q = p.find("div", attrs={"class": "content"})
-   r = q.find("img", attrs={"class": "img-responsive"})
-   imgPath = r['src']  # image path
+   try:
+      heading = soup.find("h1", attrs={"class": "ui header page__title"}).text #heading
+   except:
+      heading = None
+   try:
+      p = soup.find("div", attrs={"class": "field field-name-field-image"})
+      q = p.find("div", attrs={"class": "content"})
+      r = q.find("img", attrs={"class": "img-responsive"})
+      imgPath = r['src']  # image path
+   except:
+      imgPath = None
+   try:
+      g = soup.find("div", attrs={"class": "field field-name-body field--type-text-with-summary field--label-hidden field-item"})
+      summary = " ".join([p.text for p in g.select('p')])  #summary
+   except:
+      summary: None
 
-   g = soup.find("div", attrs={"class": "field field-name-body field--type-text-with-summary field--label-hidden field-item"})
-   summary = " ".join([p.text for p in g.select('p')])  #summary
    return {
       'image' : 'https://www.asiaone.com{image}'.format(image=imgPath),
       'heading' : heading,
