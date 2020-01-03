@@ -6,6 +6,7 @@ import random
 from bs4 import BeautifulSoup as bs
 import time
 import logging
+import sys
 from socket import timeout
 import requests
 
@@ -56,4 +57,4 @@ def get_soup_html(url=None):
                 if proxies_deleted == 40:
                     print("recalling of get_proxy to get new ip and ports")
                     get_proxy()
-
+         
