@@ -10,7 +10,7 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['politics/', 'sport/', 'health/', 'world/' 'business/', 'technology/']
+CATEGORY = {"politics":'politics/', "sports":'sport/', "health":'health/', "world":'world/', "business":'business/', "techonology":'technology/'}
 news_links={}
 link=[]
 # categorise links  'world/' 'business/', 'sport/', 'technology/', 'health/', 'world/'
@@ -27,7 +27,7 @@ def get_abc_news_links(soup, category):
          print('polop')
 
    news_links[category] = set(link)
-   #pprint.pprint(news_links)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -68,7 +68,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_abc_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_abc_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -85,7 +85,6 @@ def main():
    with open('abc.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
    
-
 if __name__ == "__main__":
    get_proxy()
    main()

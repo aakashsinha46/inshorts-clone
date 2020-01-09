@@ -3,3 +3,5 @@ __pycache__
 python-env
 .vscode
 *.json
+project_env
+.swp

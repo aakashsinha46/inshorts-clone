@@ -5,16 +5,18 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
+import pprint
 
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['category/leisure/health/','home-sports/', 'category/business/local-business/']
+CATEGORY = {"politics":'category/leisure/health/',"sports":'home-sports/', "business":'category/business/local-business/'}
 
 # categorise links
 def get_freemalaysiatoday_news_links(soup, category):
    links = [item.find('a')['href'] for item in soup.find_all("div", attrs={"class": "td-module-thumb"})]
-   news_links[category]=links
+   news_links[category]=set(links)
+   links.clear()
    #print(news_links)
  
 def get_news_data(link):
@@ -26,7 +28,10 @@ def get_news_data(link):
    try: 
       imgpath = soup.find('figure').find('img')['src']
    except :
-      imgpath = None
+      try:
+         imgpath = soup.find('img', attrs={'class':'size-full'})['src']
+      except:
+         imgpath = None
    try:
       g = soup.find('div',attrs={'class':'td-post-content tagdiv-type'})
       summary = " ".join(p.text for p in g.find_all('p'))
@@ -47,7 +52,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_freemalaysiatoday_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_freemalaysiatoday_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -69,3 +74,4 @@ def main():
 if __name__ == "__main__":
    get_proxy()
    main()
+  

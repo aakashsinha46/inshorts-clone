@@ -10,14 +10,14 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['politics/latest', 'business/latest', 'lifestyle/latest', 'lifestyle/entertainment', 'sport/latest', 'tech/latest']
-# "',, 'tech/latest'
+CATEGORY = {"politics":'politics/latest', "business":'business/latest', "lifestyle":'lifestyle/latest', "entertainment":'lifestyle/entertainment', "sports":'sport/latest', "technology":'tech/latest'}
 
 def get_straitstimes_link(soup, category):
    main = soup.find("div", {"class": "panel-pane"})
    heads = main.find_all('div', {'class':'media'})
    links = [ format_article(head) for head in heads]
-   news_links[category] = links
+   news_links[category] = set(links)
+   links.clear()
    
 def format_article(head):
    #title = head.find('h3', {'class':'story-title'}).text.strip()
@@ -56,7 +56,7 @@ def main():
    #threading
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       #submit to pool object 
-      pool = [ executor.submit(get_straitstimes_link, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_straitstimes_link, get_soup(value), key) for key,value in CATEGORY.items() ]
       #on complete
       for task in as_completed(pool):
          task.result()
@@ -74,14 +74,5 @@ def main():
       f.write(json.dumps(prepared_links))
 
 if __name__ == "__main__":
-    get_proxy()
-    main()
-   
-#------------------------------------------------------------------------------
-
-'''
-if __name__ == "__main__":
    get_proxy()
-   soup = get_soup_html("https://www.straitstimes.com/politics/latest")
-   get_straitstimes_link(soup, 'lol')
-'''
+   main()

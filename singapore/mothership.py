@@ -5,8 +5,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
+import pprint
 
-CATEGORY = ['parliament/', 'tech/', 'lifestyle/', 'lifestyle/celebrity/']
+CATEGORY = {"politics":'parliament/', "technology":'tech/', "lifestyle":'lifestyle/', "entertainment":'lifestyle/celebrity/'}
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
@@ -14,7 +15,8 @@ prepared_links = {}
 # categorise links
 def get_mothership_news_links(soup, category):
    links = [item.find('a')['href'] for item in soup.find_all("div", attrs={"class": "ind-article"})[1:]]
-   news_links[category]=links
+   news_links[category]=set(links)
+   links.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -45,7 +47,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_mothership_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_mothership_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -60,7 +62,7 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('proxy_mothership_output.json', 'w') as f:          #the output at mothership_output.json
+   with open('mothership.json', 'w') as f:          #the output at mothership_output.json
       f.write(json.dumps(prepared_links))     
    
 

@@ -7,7 +7,7 @@ from time import sleep
 from decorators import time_taken
 import pprint
 
-CATEGORY = ['politics', 'business', 'sports', 'lifestyle', 'taxonomy/term/4991']  #taxonomy/term/4991 is fashion
+CATEGORY = {"politics":'news/politics', "business":'business', "sports":'sports', "lifestyle":'lifestyle', "fashion":'taxonomy/term/4991'}  #taxonomy/term/4991 is fashion
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
@@ -17,7 +17,8 @@ def get_nst_news_link(soup, category):
    for item in soup.find_all("span", attrs={"class":"field-content"}):
       if item.find('a') is not None:
          link.append("https://www.nst.com.my/{link}".format(link=item.find('a')['href']))
-   news_links[category] = link
+   news_links[category] = set(link)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -42,14 +43,14 @@ def get_news_data(link):
    }
 
 def get_soup(category:None):
-   return get_soup_html("https://www.nst.com.my/news/{link}".format(link=category))
+   return get_soup_html("https://www.nst.com.my/{link}".format(link=category))
 
 @time_taken
 def main():
    #threading
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       #submit to pool object 
-      pool = [ executor.submit(get_nst_news_link, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_nst_news_link, get_soup(value), key) for key,value in CATEGORY.items() ]
       #on complete
       for task in as_completed(pool):
          task.result()
@@ -69,4 +70,3 @@ def main():
 if __name__ == "__main__":
     get_proxy()
     main()
-

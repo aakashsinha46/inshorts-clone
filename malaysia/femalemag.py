@@ -9,7 +9,7 @@ from decorators import time_taken
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['']
+CATEGORY = {'fashion': ''}
 link=[]
 
 # categorise links
@@ -17,16 +17,16 @@ def get_femalemag_news_links(soup, category):
    for item in soup.find_all("h2", attrs={"class":"title entry-title"}):
       if item.find('a') is not None:
          link.append(item.find('a')['href'])
-   news_links[category] = link
- 
+   news_links[category] = set(link)
+
 def get_news_data(link):
    soup = get_soup_html(link)
    try:
       heading = soup.find("h1").text
    except:
       heading = None
-   try: 
-      imgpath = soup.find('div', attrs={'class':'theiaPostSlider_preloadedSlide'}).find('div').find('img')['data-lazy-src']
+   try:
+      imgpath = soup.find('div', attrs={'class':'theiaPostSlider_preloadedSlide'}).find('img')['data-lazy-src']
    except :
       imgpath = None
    try:
@@ -48,7 +48,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_femalemag_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_femalemag_news_links, get_soup(value), key) for key, value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -63,8 +63,8 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('femalemag.json', 'w') as f:          #the output at independent_output.json
-      f.write(json.dumps(prepared_links))     
+   with open('femalemag.json', 'w') as f:          #the output output.json
+      f.write(json.dumps(prepared_links))
    
 
 if __name__ == "__main__":

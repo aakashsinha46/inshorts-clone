@@ -10,16 +10,18 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['category/politics_policy/','category/business_finance/']
-
+CATEGORY = {"politics":'category/politics_policy/', "business":'category/business_finance/'}
 link=[]
 
 # categorise links
 def get_cbc_news_links(soup, category):
-   
-   for item in soup.find_all("a", attrs={"class":"post-overlay"}):
-      link.append(item['href'])
+   #for item in soup.find_all("a", attrs={"class":"post-overlay"}):
+     # print(item['href']
+      #link.append(item['href'])
+   for item in soup.find_all('div', attrs={"class":"post-content-container"}):
+      link.append(item.find('a')['href'])
    news_links[category] = set(link)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -50,7 +52,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_cbc_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_cbc_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -63,18 +65,11 @@ def main():
          sleep(10)
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
-   
+
    with open('tpm.json', 'w') as f:          #the output at independent_output.json
-      f.write(json.dumps(prepared_links))     
+      f.write(json.dumps(prepared_links))
    
 
 if __name__ == "__main__":
    get_proxy()
    main()
-
-# if __name__ == "__main__":
-#    get_proxy()
-#    soup = get_soup_html('https://www.thepostmillennial.com/')
-#    get_cbc_news_links(soup, 'lol')
-#    get_news_data('https://www.thepostmillennial.com/economy-remains-weak-under-trudeau-as-u-s-thrives/')
-#    main()

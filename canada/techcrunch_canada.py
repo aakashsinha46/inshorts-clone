@@ -5,11 +5,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
+import pprint
 
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['']
+CATEGORY = {"technology":''}
 link=[]
 
 
@@ -18,7 +19,7 @@ def get_techcrunch_news_links(soup, category):
    for item in soup.find_all("h2", attrs={"class":"post-block__title"}):
       if item.find('a') is not None:
          link.append(item.find('a')['href'])
-   news_links[category] = link
+   news_links[category] = set(link)
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -49,7 +50,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_techcrunch_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_techcrunch_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()

@@ -7,7 +7,7 @@ from time import sleep
 from decorators import time_taken
 import pprint
 
-CATEGORY = ['showbiz', 'sports', 'tech-gadgets', 'money', 'life']
+CATEGORY = {"entertainment":'showbiz',"sports": 'sports',"technology": 'tech-gadgets',"business": 'money', "lifestyle":'life'}
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
@@ -16,7 +16,6 @@ def get_malaymail_news_link(soup, category):
    links = [item2.find('a')['href'] for item in soup.find_all("div", attrs={"class":"content"}) for item2 in item.find_all("li")]
    for index, item in enumerate(links):
       if item.find("https://www.malaymail.com"):
-         print("Not found ", item) # find and replace with concatnation
          link = "https://www.malaymail.com{item}".format(item=item)
          links[index] = link
    news_links[category] = links
@@ -52,7 +51,7 @@ def main():
    #threading
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       #submit to pool object 
-      pool = [ executor.submit(get_malaymail_news_link, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_malaymail_news_link, get_soup(value), key) for key,value in CATEGORY.items() ]
       #on complete
       for task in as_completed(pool):
          task.result()
@@ -66,12 +65,11 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open( 'malaymail.json', 'w') as f:           #the output at asiaone_output.json
+   with open( 'malaymail.json', 'w') as f:           #the output output.json
       f.write(json.dumps(prepared_links))
 
 if __name__ == "__main__":
     get_proxy()
     main()
-      
 
    

@@ -5,19 +5,19 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
+import pprint
 
-CATEGORY = ['showbiz', 'digital', 'lifestyle', 'health']
+CATEGORY = {"entertainment":'showbiz', "technology":'digital', "lifestyle":'lifestyle', "health":'health'}
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
 
 def get_asiaone_news_link(soup, category):
-   link1 =[link['href']for item in soup.find_all("div", attrs={"class": "content overlay"})  for link in item.find_all('a', href=True) ]
-      
+   link1 =[link['href']for item in soup.find_all("div", attrs={"class": "content overlay"})  for link in item.find_all('a', href=True) ]     
    link2 = [innerlink['href'] for item in soup.find_all("div", attrs={"class": "card col-xs-12 col-sm-4"}) for link in item.find_all("div", attrs={"class": "content"}) for innerlink in link.find_all('a', href=True) ]
-
    links = link1 + link2
-   news_links[category] = links
+   news_links[category] = set(links)
+   links.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -54,7 +54,7 @@ def main():
    
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       #submit to pool object 
-      pool = [ executor.submit(get_asiaone_news_link, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_asiaone_news_link, get_soup(value), key) for key,value in CATEGORY.items()]
       #on complete
       for task in as_completed(pool):
          task.result()
@@ -69,12 +69,9 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open( 'proxy_asiaone_output.json', 'w') as f:           #the output at asiaone_output.json
+   with open('asiaone.json', 'w') as f:           #the output at asiaone_output.json
       f.write(json.dumps(prepared_links))
    
 if __name__ == "__main__":
-    get_proxy()
-    main()
-      
-
-   
+   get_proxy()
+   main()

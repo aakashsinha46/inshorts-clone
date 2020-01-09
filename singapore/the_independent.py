@@ -5,16 +5,18 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
+import pprint
 
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['economy/', 'lifestyle/']
+CATEGORY = {"business":'economy/', "lifestyle":'lifestyle/'}
 
 # categorise links
 def get_independent_news_links(soup, category):
    links = [item.find('a')['href'] for item in soup.find_all("h3", attrs={"class": "entry-title td-module-title"})]
-   news_links[category]=links
+   news_links[category]=set(links)
+   links.clear()
    
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -48,7 +50,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_independent_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_independent_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -63,7 +65,7 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('the_independent_output.json', 'w') as f:          #the output at independent_output.json
+   with open('the_independent.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
    
 

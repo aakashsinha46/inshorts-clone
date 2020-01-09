@@ -10,9 +10,10 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['sports', 'business', 'life', 'health', 'technology', 'news/world', 'life/fashion-beauty']
+CATEGORY = {"sports":'sports', "business":'business', "lifestyle":'life', "health":'health', "technology":'technology', "fashion":'life/fashion-beauty'}
 news_links={}
 link=[]
+
 # categorise links
 def get_montrealGazette_links(soupAll, category):
    soup = soupAll.find('div', attrs={'id': 'main'})
@@ -32,7 +33,7 @@ def get_montrealGazette_links(soupAll, category):
       except:
          pass
    news_links[category] = set(link)
-   #pprint.pprint(news_links)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -40,7 +41,6 @@ def get_news_data(link):
       heading = soup.find("h1", attrs={'class':"entry-title"}).text
    except:
       heading = None
-      print(link)
    try:
       imgpath = soup.find('figure').find('img')['src']
    except :
@@ -49,7 +49,6 @@ def get_news_data(link):
       summary = " ".join([p.text for p in soup.find('div', attrs={"itemprop":"articleBody"}).find_all('p')])
    except:
       summary = None
-      print(link)
    return {
           'image': imgpath,
           'heading': heading,
@@ -65,7 +64,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_montrealGazette_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_montrealGazette_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -78,17 +77,11 @@ def main():
          sleep(10)
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
-   
+
    with open('montrealGazette.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links)) 
 
 if __name__ == "__main__":
    get_proxy()
    main()
-'''
-if __name__ == "__main__":
-   get_proxy()
-   soup = get_soup_html('https://montrealgazette.com/category/sports')
-   get_montrealGazette_links(soup,'lol')
-   get_news_data('https://montrealgazette.com/sports/hockey/canada-rides-four-power-play-goals-in-first-to-pound-czechs-for-top-spot/wcm/2e06fa55-cdc4-4a8c-af47-1234cf576a7c')
-'''
+

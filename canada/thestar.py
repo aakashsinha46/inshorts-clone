@@ -10,7 +10,7 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['politics', 'world', 'life', 'sports', 'entertainment', 'business', 'world', 'life/health_wellness', 'life/fashion_style']
+CATEGORY = {"politics":'politics', "world":'world', "lifestyle":'life', "sports":'sports', "entertainment":'entertainment', "business":'business', "health":'life/health_wellness', "fashion":'life/fashion_style'}
 news_links={}
 link=[]
 # categorise links
@@ -18,6 +18,7 @@ def get_thestar_news_links(soup, category):
    for item in soup.find_all("div", attrs={"class":"story__body"}):
       link.append('https://www.thestar.com/{text}'.format(text = item.find('a')['href']))
    news_links[category] = set(link)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -48,7 +49,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_thestar_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_thestar_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -65,7 +66,6 @@ def main():
    with open('thestar.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
    
-
 if __name__ == "__main__":
    get_proxy()
    main()

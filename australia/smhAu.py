@@ -10,8 +10,7 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['politics','business','sport']
-
+CATEGORY = {"politics":'politics',"business":'business',"sports":'sport'}
 link=[]
 
 # categorise links
@@ -51,7 +50,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_cbc_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_cbc_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -71,4 +70,3 @@ def main():
 if __name__ == "__main__":
    get_proxy()
    main()
-

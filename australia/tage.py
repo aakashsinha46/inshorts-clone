@@ -10,17 +10,14 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['politics', 'business', 'world', 'sport', 'lifestyle', 'technology', 'healthcare']
-#'politics', 'business', 'world', 'sport', 'lifestyle', 'technology', 'healthcare'
-
+CATEGORY = {"politics":'politics', "business":'business', "world":'world', "sports":'sport', "lifestyle":'lifestyle', "technology":'technology', "health":'healthcare'}
 link=[]
 
-# categorise links
 def get_cbc_news_links(soup, category):
-   
    for item in soup.find_all('h3',{'class': '_2XVos'}):
       link.append('https://www.theage.com.au{links}'.format(links=item.find('a')['href']))
    news_links[category] = set(link)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -45,22 +42,21 @@ def get_news_data(link):
           'image': imgpath,
           'heading': heading,
           'desc': summary,
-          'link': link  
-   }
+          'link': link
+    }
 
 def get_soup(category:None):
    return get_soup_html("https://www.theage.com.au/{link}".format(link=category))
 
 @time_taken
+
 def main():
-   # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_cbc_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_cbc_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
-
    # prepare links of category to links newsfemalemag
    for category, links in news_links.items():
       prepared_links[category] = []
@@ -69,11 +65,10 @@ def main():
          sleep(10)
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
-   
+
    with open('tage.json', 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
-   
+
 if __name__ == "__main__":
    get_proxy()
    main()
-

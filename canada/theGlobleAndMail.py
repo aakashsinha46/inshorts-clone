@@ -10,8 +10,7 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['/politics', '/business', '/sports', '/life', '/world']
-
+CATEGORY = {"politics":'/politics', "business":'/business', "sports":'/sports', "lifestyle":'/life', "world":'/world'}
 link=[]
 
 # categorise links
@@ -20,6 +19,7 @@ def get_theGlobleAndMail_news_links(soup, category):
       if item is not None:
          link.append('https://www.theglobeandmail.com{links}'.format(links = item.find('a')['href']))
    news_links[category] = set(link)
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -51,7 +51,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_theGlobleAndMail_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_theGlobleAndMail_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -64,10 +64,9 @@ def main():
          sleep(10)
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
-   
+
    with open('theGlobleAndMail.json', 'w') as f:          #the output at independent_output.json
-      f.write(json.dumps(prepared_links))     
-   
+      f.write(json.dumps(prepared_links))
 
 if __name__ == "__main__":
    get_proxy()

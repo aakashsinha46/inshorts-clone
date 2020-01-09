@@ -10,7 +10,7 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['']
+CATEGORY = {"sports":''}
 news_links={}
 link=[]
 # categorise links
@@ -32,7 +32,6 @@ def get_star_sports_links(soup, category):
          pass
    link.remove('#')
    news_links[category] = set(link)
-   #print(news_links)
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -68,7 +67,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_star_sports_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_star_sports_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()

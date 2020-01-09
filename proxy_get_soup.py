@@ -57,4 +57,4 @@ def get_soup_html(url=None):
                 if proxies_deleted == 40:
                     print("recalling of get_proxy to get new ip and ports")
                     get_proxy()
-         
+

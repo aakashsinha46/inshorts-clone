@@ -5,11 +5,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 from time import sleep
 from decorators import time_taken
+import pprint
 
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['sports', 'news/business','lifestyle/fashion']
+CATEGORY = {"sports":'sports', "business":'news/business', "fashion":'lifestyle/fashion'}
 
 # categorise links
 def get_tnp_news_links(soup, category):
@@ -18,7 +19,7 @@ def get_tnp_news_links(soup, category):
    
 def get_news_data(link):
    soup = get_soup_html(link)
-   try: 
+   try:
       if soup.find('figure',attrs={'class':'group-media-frame field-group-html-element'})is not None:
          imgpath = (soup.find('figure',attrs={'class':'group-media-frame field-group-html-element'})).find('img')['src']
       else:
@@ -48,7 +49,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_tnp_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_tnp_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -63,8 +64,8 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('tnp_output.json', 'w') as f:          #the output at independent_output.json
-      f.write(json.dumps(prepared_links))     
+   with open('tnp.json', 'w') as f:          #the output at independent_output.json
+      f.write(json.dumps(prepared_links))
    
 
 if __name__ == "__main__":

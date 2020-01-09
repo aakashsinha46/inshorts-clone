@@ -10,7 +10,7 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['news/politics', 'news/business', 'news/health', 'news/entertainment', 'news/technology', 'news/world', 'sports']
+CATEGORY = {"politics":'news/politics', "business":'news/business', "health":'news/health', "entertainment":'news/entertainment', "technology":'news/technology', "world":'news/world', "sports":'sports'}
 
 link=[]
 
@@ -23,7 +23,7 @@ def get_cbc_news_links(soup, category):
          else:
             link.append('https://www.cbc.ca{links}'.format(links = item['href']))
    news_links[category] = set(link)
-
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -56,7 +56,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_cbc_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_cbc_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()

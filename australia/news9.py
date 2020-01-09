@@ -10,17 +10,16 @@ import pprint
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = ['technology', 'politics', 'health', 'world']#, 'politics', 'health', 'world'
+CATEGORY = {"business": 'business/', "sports":'sport/', "technology":'technology', "politics":'politics', "health": 'health', "world":'world'}
 news_links={}
 link=[]
-# categorise links  'world/' 'business/', 'sport/', 'technology/', 'health/', 'world/'
+
 def get_news9_news_links(soup, category):
    #soup2 = soup.find('div',attrs={'class':"c75l"})
    for item in soup.find_all('article', attrs={'class':"story-block"}):
       link.append(item.find('a')['href'])
    news_links[category] = set(link)
-   pprint.pprint(news_links)
-
+   link.clear()
 
 def get_news_data(link):
    soup = get_soup_html(link)
@@ -57,7 +56,7 @@ def main():
    # threadpool
    with ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
       # submit to pool object
-      pool = [ executor.submit(get_news9_news_links, get_soup(value), value) for key,value in enumerate(CATEGORY) ]
+      pool = [ executor.submit(get_news9_news_links, get_soup(value), key) for key,value in CATEGORY.items() ]
       # on complete
       for task in as_completed(pool):
          task.result()
@@ -70,10 +69,9 @@ def main():
          sleep(10)
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
-   
+
    with open('news9.json', 'w') as f:          #the output at independent_output.json
-      f.write(json.dumps(prepared_links))     
-   
+      f.write(json.dumps(prepared_links))
 
 if __name__ == "__main__":
    get_proxy()
