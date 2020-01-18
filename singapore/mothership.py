@@ -1,11 +1,17 @@
-import sys
-sys.path.insert(0,'../')
-from proxy_get_soup import get_soup_html, get_proxy
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import pprint
 import json
 from time import sleep
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import os
+masterPath = os.getcwd() #main project dir, it does not return pwd it return the calling dir
+
+import sys
+sys.path.insert(0, masterPath)
+
+#user defined modules
+from proxy_get_soup import get_soup_html,get_proxy
 from decorators import time_taken
-import pprint
 
 CATEGORY = {"politics":'parliament/', "technology":'tech/', "lifestyle":'lifestyle/', "entertainment":'lifestyle/celebrity/'}
 MAX_WORKER = 5
@@ -62,10 +68,9 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('mothership.json', 'w') as f:          #the output at mothership_output.json
+   with open('{path}/singapore/mothership.json'.format(path=masterPath), 'w') as f:          #the output at mothership_output.json
       f.write(json.dumps(prepared_links))     
    
-
 if __name__ == "__main__":
    get_proxy()
    main()

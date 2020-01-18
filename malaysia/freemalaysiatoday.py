@@ -1,16 +1,22 @@
-import sys
-sys.path.insert(0,'../')
-from proxy_get_soup import get_soup_html,get_proxy
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import pprint
 import json
 from time import sleep
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import os
+masterPath = os.getcwd() #main project dir, it does not return pwd it return the calling dir
+
+import sys
+sys.path.insert(0, masterPath)
+
+#user defined modules
+from proxy_get_soup import get_soup_html,get_proxy
 from decorators import time_taken
-import pprint
 
 MAX_WORKER = 5
 news_links = {}
 prepared_links = {}
-CATEGORY = {"politics":'category/leisure/health/',"sports":'home-sports/', "business":'category/business/local-business/'}
+CATEGORY = {"health":'category/leisure/health/',"politics":'category/leisure/health/',"sports":'home-sports/', "business":'category/business/local-business/',"world":'category/world/'}
 
 # categorise links
 def get_freemalaysiatoday_news_links(soup, category):
@@ -67,11 +73,9 @@ def main():
          for task_link in as_completed(pool_links):
             prepared_links[category].append(task_link.result())
    
-   with open('freemalaysiatoday.json', 'w') as f:          #the output at independent_output.json
+   with open('{path}/malaysia/freemalaysiatoday.json'.format(path=masterPath), 'w') as f:          #the output at independent_output.json
       f.write(json.dumps(prepared_links))     
    
-
 if __name__ == "__main__":
    get_proxy()
    main()
-  
