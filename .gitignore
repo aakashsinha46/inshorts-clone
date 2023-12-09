@@ -5,3 +5,4 @@ python-env
 *.json
 project_env
 .swp
+.DS_Store
